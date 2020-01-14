@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            background-color: white;
+        }
+
+        button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+        }
+        #status{
+            position: fixed;
+            top: 10px;
+            left: 80px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <button id="eraser">橡皮擦</button>
+    <div id="status">OFF</div>
+    <script>
+        //1.函数：自动设置canvas的大小，根据浏览器窗口大小改变
+        function autoSetCanvasSize(canvas) {
+            var x = document.documentElement.clientWidth
+            var y = document.documentElement.clientHeight
+            cv.width = x
+            cv.height = y
+        }
+        //监听：浏览器窗口改变
+        window.onresize = autoSetCanvasSize()
+        //2.函数：画线，画圈
+        function drawCircle(x, y, radius) {
+            ctx.beginPath()
+            ctx.fillStyle = 'black'
+            ctx.arc(x, y, radius, 0, Math.PI * 2)
+            ctx.fill()
+        }
+        function drawLine(x1, y1, x2, y2,color,width) {
+            ctx.beginPath()
+            ctx.moveTo(x1, y1)
+            ctx.strokeStyle = color
+            ctx.lineWidth = width
+            ctx.lineTo(x2, y2)
+            ctx.stroke()
+            ctx.closePath()
+        }
+        //3.监听：橡皮擦按钮
+        document.getElementById('eraser').onclick = function () {
+            usingEraser = !usingEraser
+            if(usingEraser){
+                document.getElementById('status').textContent = 'ON'
+            }else{
+                document.getElementById('status').textContent = 'OFF'
+            }
+        }
+        //4.声明：拿到canvas画布并生成上下文
+        var cv = document.getElementById('canvas')
+        var ctx = cv.getContext('2d')
+        //5.定义：需要用到的变量
+        var using = false
+        var usingEraser = false
+        var lastPoint = {
+            x: undefined,
+            y: undefined
+        }
+        //6.主函数
+        autoSetCanvasSize()
+        //监听：鼠标按下，鼠标移动，鼠标释放
+        cv.onmousedown = function (e) {
+            lastPoint.x = e.clientX
+            lastPoint.y = e.clientY
+            if (usingEraser) {
+                using = true
+            } else {
+                using = true
+            }
+
+        }
+        cv.onmousemove = function (e) {
+            if (using) {
+                if (usingEraser) {
+                    drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY,'white',20)
+                    lastPoint.x = e.clientX
+                    lastPoint.y = e.clientY
+                } else {
+                    drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY,'black',5)
+                    lastPoint.x = e.clientX
+                    lastPoint.y = e.clientY
+                }
+            } 
+        }
+        cv.onmouseup = function (e) {
+            using = false
+        }
+    </script>
+</body>
+
+</html>
