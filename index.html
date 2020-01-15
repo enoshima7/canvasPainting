@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
@@ -20,7 +21,8 @@
             top: 10px;
             left: 10px;
         }
-        #status{
+
+        #status {
             position: fixed;
             top: 10px;
             left: 80px;
@@ -52,7 +54,7 @@
             ctx.arc(x, y, radius, 0, Math.PI * 2)
             ctx.fill()
         }
-        function drawLine(x1, y1, x2, y2,color,width) {
+        function drawLine(x1, y1, x2, y2, color, width) {
             ctx.beginPath()
             ctx.moveTo(x1, y1)
             ctx.strokeStyle = color
@@ -64,13 +66,13 @@
         //3.监听：橡皮擦按钮
         document.getElementById('eraser').onclick = function () {
             usingEraser = !usingEraser
-            if(usingEraser){
+            if (usingEraser) {
                 document.getElementById('status').textContent = 'ON'
-            }else{
+            } else {
                 document.getElementById('status').textContent = 'OFF'
             }
         }
-        
+
         //5.定义：需要用到的变量
         var using = false
         var usingEraser = false
@@ -81,32 +83,65 @@
         //6.主函数
         autoSetCanvasSize()
         //监听：鼠标按下，鼠标移动，鼠标释放
-        cv.onmousedown = function (e) {
-            lastPoint.x = e.clientX
-            lastPoint.y = e.clientY
-            if (usingEraser) {
-                using = true
-            } else {
-                using = true
-            }
-
-        }
-        cv.onmousemove = function (e) {
-            if (using) {
+        if (document.body.ontouchstart !== undefined) {
+            cv.ontouchstart = function (e) {
+                console.log("开始摸");
+                lastPoint.x = e.touches[0].clientX
+                lastPoint.y = e.touches[0].clientY
                 if (usingEraser) {
-                    drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY,'white',20)
-                    lastPoint.x = e.clientX
-                    lastPoint.y = e.clientY
+                    using = true
                 } else {
-                    drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY,'black',5)
-                    lastPoint.x = e.clientX
-                    lastPoint.y = e.clientY
+                    using = true
                 }
-            } 
+            }
+            cv.ontouchmove = function (e) {
+                console.log("边摸变动");
+                if (using) {
+                    if (usingEraser) {
+                        drawLine(lastPoint.x, lastPoint.y, e.touches[0].clientX, e.touches[0].clientY, 'white', 20)
+                        lastPoint.x = e.touches[0].clientX
+                        lastPoint.y = e.touches[0].clientY
+                    } else {
+                        drawLine(lastPoint.x, lastPoint.y, e.touches[0].clientX, e.touches[0].clientY, 'black', 5)
+                        lastPoint.x = e.touches[0].clientX
+                        lastPoint.y = e.touches[0].clientY
+                    }
+                }
+            }
+            cv.ontouchend = function (e) {
+                console.log("结束摸");
+                using = false
+            }
+            
+        } else {
+            cv.onmousedown = function (e) {
+                lastPoint.x = e.clientX
+                lastPoint.y = e.clientY
+                if (usingEraser) {
+                    using = true
+                } else {
+                    using = true
+                }
+
+            }
+            cv.onmousemove = function (e) {
+                if (using) {
+                    if (usingEraser) {
+                        drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY, 'white', 20)
+                        lastPoint.x = e.clientX
+                        lastPoint.y = e.clientY
+                    } else {
+                        drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY, 'black', 5)
+                        lastPoint.x = e.clientX
+                        lastPoint.y = e.clientY
+                    }
+                }
+            }
+            cv.onmouseup = function (e) {
+                using = false
+            }
         }
-        cv.onmouseup = function (e) {
-            using = false
-        }
+
     </script>
 </body>
 
