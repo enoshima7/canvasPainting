@@ -33,6 +33,9 @@
     <button id="eraser">橡皮擦</button>
     <div id="status">OFF</div>
     <script>
+        //4.声明：拿到canvas画布并生成上下文
+        var cv = document.getElementById('canvas')
+        var ctx = cv.getContext('2d')
         //1.函数：自动设置canvas的大小，根据浏览器窗口大小改变
         function autoSetCanvasSize(canvas) {
             var x = document.documentElement.clientWidth
@@ -67,9 +70,7 @@
                 document.getElementById('status').textContent = 'OFF'
             }
         }
-        //4.声明：拿到canvas画布并生成上下文
-        var cv = document.getElementById('canvas')
-        var ctx = cv.getContext('2d')
+        
         //5.定义：需要用到的变量
         var using = false
         var usingEraser = false
