@@ -7,9 +7,28 @@
         content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <script src="//at.alicdn.com/t/font_1614403_yrctp6i6q2k.js"></script>
     <style>
+        .icon {
+            width: 2.5em;
+            height: 2.5em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
+            position: fixed;
+        }
+        #pen{top: 3em;left: 3em;transition: all 0.3s;}
+        #pen.active{color:red;transform: scale(1.2);}
+        #eraser{top: 3em;left: 6em;transition: all 0.3s;}
+        #eraser.active{color:red;transform: scale(1.2);}
+        #clear{top: 3em;left: 9em;transition: all 0.3s;}
+        #clear.active{color:red;transform: scale(1.2);}
+        #download{top: 3em;left: 12em;transition: all 0.3s;}
+        #download.active{color:red;transform: scale(1.2);}
+
         body {
             margin: 0;
+            padding: 0;
         }
 
         canvas {
@@ -27,21 +46,44 @@
             top: 10px;
             left: 80px;
         }
+        ol,li{list-style: none;}
+        li{position: fixed;top:8em;left: 3em; width: 2em;height: 2em; border: 1px solid black;
+        border-radius: 50%;}
+        #black{top:8em;background-color: black;}
+        #red{top:11em;background-color: red;}
+        #blue{top:14em;background-color: blue;}
+        #green{top:17em;background-color: green;}
     </style>
 </head>
 
 <body>
     <canvas id="canvas" width="500" height="500"></canvas>
-    <button id="eraser">橡皮擦</button>
-    <div id="status">OFF</div>
+    <svg class="icon" id="pen" aria-hidden="true">
+        <use xlink:href="#icon-pen"></use>
+    </svg>
+    <svg class="icon" id="eraser" aria-hidden="true">
+        <use xlink:href="#icon-eraser"></use>
+    </svg>
+    <svg class="icon" id="clear" aria-hidden="true">
+        <use xlink:href="#icon-qingkong"></use>
+    </svg>
+    <svg class="icon" id="download" aria-hidden="true">
+        <use xlink:href="#icon-xiazai"></use>
+    </svg>
+    <ol>
+        <li id="black"></li>
+        <li id="red"></li>
+        <li id="blue"></li>
+        <li id="green"></li>
+    </ol>
     <script>
         //4.声明：拿到canvas画布并生成上下文
         var cv = document.getElementById('canvas')
         var ctx = cv.getContext('2d')
         //1.函数：自动设置canvas的大小，根据浏览器窗口大小改变
         function autoSetCanvasSize(canvas) {
-            var x = document.documentElement.clientWidth
-            var y = document.documentElement.clientHeight
+            var x = window.innerWidth
+            var y = window.innerHeight
             cv.width = x
             cv.height = y
         }
@@ -50,7 +92,6 @@
         //2.函数：画线，画圈
         function drawCircle(x, y, radius) {
             ctx.beginPath()
-            ctx.fillStyle = 'black'
             ctx.arc(x, y, radius, 0, Math.PI * 2)
             ctx.fill()
         }
@@ -63,17 +104,46 @@
             ctx.stroke()
             ctx.closePath()
         }
-        //3.监听：橡皮擦按钮
+        //3.监听：各种工具按钮
         document.getElementById('eraser').onclick = function () {
-            usingEraser = !usingEraser
-            if (usingEraser) {
-                document.getElementById('status').textContent = 'ON'
-            } else {
-                document.getElementById('status').textContent = 'OFF'
-            }
+            usingEraser = true
+                document.getElementById('eraser').classList.add('active')
+                document.getElementById('pen').classList.remove('active')
+
+        }
+        document.getElementById('pen').onclick = function () {
+                usingEraser = false
+                document.getElementById('pen').classList.add('active')
+                document.getElementById('eraser').classList.remove('active')
+
+        }
+        document.getElementById('clear').onclick = function () {
+            autoSetCanvasSize()
+        }
+        document.getElementById('download').onclick = function () {
+            var link =  document.createElement('a')
+            link.download = "我的画儿"
+            link.href = cv.toDataURL("image/png")
+            link.dataset.downloadurl
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        }
+        document.getElementById('black').onclick = function(){
+            color = 'black'
+        }
+        document.getElementById('red').onclick = function(){
+            color = 'red'
+        }
+        document.getElementById('blue').onclick = function(){
+            color = 'blue'
+        }
+        document.getElementById('green').onclick = function(){
+            color = 'green'
         }
 
         //5.定义：需要用到的变量
+        var color = 'black'
         var using = false
         var usingEraser = false
         var lastPoint = {
@@ -102,7 +172,7 @@
                         lastPoint.x = e.touches[0].clientX
                         lastPoint.y = e.touches[0].clientY
                     } else {
-                        drawLine(lastPoint.x, lastPoint.y, e.touches[0].clientX, e.touches[0].clientY, 'black', 5)
+                        drawLine(lastPoint.x, lastPoint.y, e.touches[0].clientX, e.touches[0].clientY, color, 5)
                         lastPoint.x = e.touches[0].clientX
                         lastPoint.y = e.touches[0].clientY
                     }
@@ -112,7 +182,7 @@
                 console.log("结束摸");
                 using = false
             }
-            
+
         } else {
             cv.onmousedown = function (e) {
                 lastPoint.x = e.clientX
@@ -131,7 +201,7 @@
                         lastPoint.x = e.clientX
                         lastPoint.y = e.clientY
                     } else {
-                        drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY, 'black', 5)
+                        drawLine(lastPoint.x, lastPoint.y, e.clientX, e.clientY, color, 5)
                         lastPoint.x = e.clientX
                         lastPoint.y = e.clientY
                     }
